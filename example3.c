@@ -1,0 +1,27 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <stdlib.h> // for exit(-1)
+
+#define NUM_THREADS 5
+
+void *printHello(void * index) {
+    printf("\n%d: Hello CMPS 272!\n", *((int *) index));
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t threads[NUM_THREADS];
+    int t, err;
+    int ids[NUM_THREADS];
+    pthread_attr_t attr; /* set of attributes for the thread */
+    pthread_attr_init(&attr); /* get the default attributes */
+    pthread_attr_setschedpolicy(&attr, SCHED_FIFO); /* FIFO Scheduling */
+    for(t = 0; t < NUM_THREADS; t++) {
+        ids[t] = t;
+        printf("Creating thread %d\n", t);
+        err = pthread_create(&threads[t], &attr, printHello, &ids[t]); 
+        if(err != 0) exit(-1);
+    }
+
+    pthread_exit(NULL); // Question? replace with exit(0);
+}
